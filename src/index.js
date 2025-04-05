@@ -1,3 +1,7 @@
+import './pages/index.css';
+import { initialCards } from './components/cards';
+
+
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 // @todo: DOM узлы
@@ -38,4 +42,3 @@ const doubledNumbers = numbers.map(number => number * 2);
 
 console.log(doubledNumbers); // 4, 6, 10
 
-import './pages/index.css';
