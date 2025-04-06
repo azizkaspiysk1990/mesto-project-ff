@@ -1,8 +1,7 @@
 import './pages/index.css';
 import { initialCards } from './components/cards';
 import { createCard, deleteCard, likeCard} from './components/card';
-import { openPopup, closePopup, initAnimatedPopups } from './components/modal';
-
+import { openPopup, closePopup } from './components/modal';
 
 
 // @todo: DOM узлы
@@ -29,22 +28,8 @@ function openImage(element) {
    openPopup(imageTypePopup);
 }
 
- //todo: Закрыть попапы через крестик и overlay
+ //todo: Профиль и редактирование профиля
 
-    document.addEventListener('click', (evt) => {
-        // Закрытие по крестику
-        if (evt.target.closest('.popup__close')) {
-            const popup = evt.target.closest('.popup');
-            if (popup) closePopup(popup);
-        }
-        
-        // Закрытие по оверлею
-        if (evt.target.classList.contains('popup')) {
-            closePopup(evt.target);
-        }
-    });
-
-//todo: Профиль и редактирование профиля
 const profileEditButton = document.querySelector('.profile__edit-button');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
 const popupFormEdit = document.forms['edit-profile'];
@@ -71,6 +56,7 @@ profileEditButton.addEventListener('click', () => {
 popupFormEdit.addEventListener('submit', handleFormSubmit);
 
 //todo: Добавление новой карточки
+
 const newCardButton = document.querySelector('.profile__add-button');
 const addCardForm = document.forms['new-place'];
 const newCardPopup = document.querySelector('.popup_type_new-card');
@@ -92,5 +78,13 @@ function handleAddNewCardSubmit(evt) {
     openPopup(newCardPopup);
    });
 
-//todo: Анимация
+//todo: Анимация модальных окон
+
+function initAnimatedPopups() {
+    const popups = document.querySelectorAll('.popup');
+    popups.forEach(popup => {
+        popup.classList.add('popup_is-animated')
+    })
+}
+ 
 document.addEventListener('DOMContentLoaded', initAnimatedPopups);

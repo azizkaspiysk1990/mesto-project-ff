@@ -15,10 +15,18 @@ function closePopupEsc(evt) {
     }
 }
 
-export function initAnimatedPopups() {
-    const popups = document.querySelectorAll('.popup');
-    popups.forEach(popup => {
-        popup.classList.add('popup_is-animated')
-    })
-}
- 
+//todo: Закрыть попапы через крестик и overlay
+document.addEventListener('click', (evt) => {
+        
+    if (evt.target.closest('.popup__close')) {
+        const popup = evt.target.closest('.popup');
+        if (popup) closePopup(popup);
+    }
+    
+    
+    if (evt.target.classList.contains('popup')) {
+        closePopup(evt.target);
+    }
+});
+
+
