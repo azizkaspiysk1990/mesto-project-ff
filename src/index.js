@@ -1,7 +1,7 @@
 import './pages/index.css';
 import { initialCards } from './components/cards';
 import { createCard, deleteCard, likeCard} from './components/card';
-import { openPopup, closePopup, allClosePopups } from './components/modal';
+import { openPopup, closePopup, initAnimatedPopups } from './components/modal';
 
 
 
@@ -14,6 +14,7 @@ initialCards.forEach((element) => {
     const cardElement = createCard(element, deleteCard, likeCard, openImage);
     placesList.append(cardElement)
 });
+
 // @todo: Открыть картинку
 
 const imageTypePopup = document.querySelector('.popup_type_image');
@@ -30,24 +31,19 @@ function openImage(element) {
 
  //todo: Закрыть попапы через крестик и overlay
 
- const popupCloseButton = document.querySelectorAll('.popup__close');
-    popupCloseButton.forEach((button) => {
-    const popup = button.closest('.popup');
-    button.addEventListener('click', () => {
-        if(popup) {
-            closePopup(popup);
+    document.addEventListener('click', (evt) => {
+        // Закрытие по крестику
+        if (evt.target.closest('.popup__close')) {
+            const popup = evt.target.closest('.popup');
+            if (popup) closePopup(popup);
+        }
+        
+        // Закрытие по оверлею
+        if (evt.target.classList.contains('popup')) {
+            closePopup(evt.target);
         }
     });
-}); 
 
- const closePopupsOverlay = document.querySelectorAll('.popup');
-    closePopupsOverlay.forEach((popup) => {
-        popup.addEventListener('click', (evt) => {
-            if(evt.target === popup) {
-                closePopup(popup)
-            }
-        });
-    });
 //todo: Профиль и редактирование профиля
 const profileEditButton = document.querySelector('.profile__edit-button');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
@@ -96,4 +92,5 @@ function handleAddNewCardSubmit(evt) {
     openPopup(newCardPopup);
    });
 
-
+//todo: Анимация
+document.addEventListener('DOMContentLoaded', initAnimatedPopups);
