@@ -76,14 +76,3 @@ addCardForm.addEventListener("submit", handleAddCardSubmit);
 addCardButton.addEventListener("click", () => {
   openPopup(addCardPopup);
 });
-
-//todo: Анимация модальных окон
-
-function initAnimatedPopups() {
-  const popups = document.querySelectorAll(".popup");
-  popups.forEach((popup) => {
-    popup.classList.add("popup_is-animated");
-  });
-}
-
-document.addEventListener("DOMContentLoaded", initAnimatedPopups);

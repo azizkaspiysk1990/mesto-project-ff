@@ -15,9 +15,15 @@ function closePopupEsc(evt) {
   }
 }
 
-//todo: Закрыть попапы через крестик и overlay
+//todo: Закрыть попапы через крестик и overlay, подключить анимацию
 
 const popups = document.querySelectorAll(".popup");
+
+function initAnimatedPopups() {
+  popups.forEach((popup) => {
+    popup.classList.add("popup_is-animated");
+  });
+}
 
 popups.forEach((popup) => {
   popup.addEventListener("mousedown", (evt) => {
@@ -30,3 +36,5 @@ popups.forEach((popup) => {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", initAnimatedPopups);
