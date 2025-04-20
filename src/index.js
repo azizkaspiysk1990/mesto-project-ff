@@ -1,23 +1,69 @@
 import "./pages/index.css";
-import { initialCards } from "./components/cards";
 import { createCard, deleteCard, likeCard } from "./components/card";
 import { openPopup, closePopup } from "./components/modal";
+import { enableValidation, clearValidation } from "./components/validation";
+import { getUserInfo, getInitialCards, editUserProfile, addNewCard, updateAvatar } from "./components/api";
+
+//Валидация
+
+let userId;
+
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
+
+enableValidation(validationConfig);
+
+const profileImage = document.querySelector(".profile__image");
+const addCardButton = document.querySelector(".profile__add-button");
+const addCardForm = document.forms["new-place"];
+const addCardPopup = document.querySelector(".popup_type_new-card");
+const cardNameInput = addCardForm.elements["place-name"];
+const cardLinkInput = addCardForm.elements["link"];
+const imageTypePopup = document.querySelector(".popup_type_image");
+const popupImage = imageTypePopup.querySelector(".popup__image");
+const popupCaption = imageTypePopup.querySelector(".popup__caption");
+const editProfileButton = document.querySelector(".profile__edit-button");
+const editProfilePopup = document.querySelector(".popup_type_edit");
+const editProfileForm = document.forms["edit-profile"];
+const profileJobInput = editProfileForm.elements["description"];
+const profileNameInput = editProfileForm.elements["name"];
+const profileTitleElement = document.querySelector(".profile__title");
+const profileDescriptionElement = document.querySelector(".profile__description");
+const editAvatarPopup = document.querySelector(".popup_type_edit_avatar");
+const avatarInput = editAvatarPopup.querySelector(".popup__input_type_url");
+const editAvatarForm = document.forms["avatar"];
 
 // @todo: DOM узлы
 const placesList = document.querySelector(".places__list");
 
-// @todo: Вывести карточки на страницу
+//Загрузка профиля и карточек
 
-initialCards.forEach((element) => {
-  const cardElement = createCard(element, deleteCard, likeCard, openImage);
-  placesList.append(cardElement);
+Promise.all([
+  getInitialCards(),
+  getUserInfo()
+])
+.then(([cards, userData]) => {
+  profileTitleElement.textContent = userData.name;
+  profileDescriptionElement.textContent = userData.about;
+  userId = userData._id;
+  profileImage.style.backgroundImage = `url(${userData.avatar})`;
+
+  cards.forEach((element) => {
+    const newCard = createCard(element, deleteCard, likeCard, openImage, userId);
+    placesList.append(newCard) 
+  });
+}).catch((err) => {
+  console.log("Ошибка при загрузке данных:", err);
 });
 
-// @todo: Открыть картинку
 
-const imageTypePopup = document.querySelector(".popup_type_image");
-const popupImage = imageTypePopup.querySelector(".popup__image");
-const popupCaption = imageTypePopup.querySelector(".popup__caption");
+// @todo: Открыть картинку
 
 function openImage(element) {
   popupImage.src = element.link;
@@ -28,16 +74,6 @@ function openImage(element) {
 
 //todo: Профиль и редактирование профиля
 
-const editProfileButton = document.querySelector(".profile__edit-button");
-const editProfilePopup = document.querySelector(".popup_type_edit");
-const editProfileForm = document.forms["edit-profile"];
-const profileJobInput = editProfileForm.elements["description"];
-const profileNameInput = editProfileForm.elements["name"];
-const profileTitleElement = document.querySelector(".profile__title");
-const profileDescriptionElement = document.querySelector(
-  ".profile__description"
-);
-
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
@@ -45,6 +81,7 @@ function handleProfileFormSubmit(evt) {
   profileDescriptionElement.textContent = profileJobInput.value;
 
   closePopup(editProfilePopup);
+  clearValidation(editProfileForm, validationConfig)
 }
 
 editProfileButton.addEventListener("click", () => {
@@ -56,12 +93,6 @@ editProfileButton.addEventListener("click", () => {
 editProfileForm.addEventListener("submit", handleProfileFormSubmit);
 
 //todo: Добавление новой карточки
-
-const addCardButton = document.querySelector(".profile__add-button");
-const addCardForm = document.forms["new-place"];
-const addCardPopup = document.querySelector(".popup_type_new-card");
-const cardNameInput = addCardForm.elements["place-name"];
-const cardLinkInput = addCardForm.elements["link"];
 
 function handleAddCardSubmit(evt) {
   evt.preventDefault();
@@ -76,6 +107,32 @@ addCardForm.addEventListener("submit", handleAddCardSubmit);
 addCardButton.addEventListener("click", () => {
   openPopup(addCardPopup);
 });
+
+//todo: Редактирование аватара
+
+function handleFormSubmitEditAvatar(evt) {
+  evt.preventDefault();
+   updateAvatar(avatarInput.value)
+   .then((userData) => {
+      profileImage.style.backgroundImage = `url(${userData.avatar})`;
+      closePopup(editAvatarPopup);
+   })
+   .catch((err) => {
+    console.log("Ошибка при обновлении аватара:", err);
+   })
+   .finally(() => {
+    clearValidation(editAvatarForm, validationConfig);
+   })
+}
+
+function changeAvatar() {
+  avatarInput.value = profileImage.style.backgroundImage;
+  openPopup(editAvatarPopup);
+  clearValidation(editAvatarForm, validationConfig)
+};
+
+profileImage.addEventListener("click", changeAvatar);
+editAvatarForm.addEventListener("submit", handleFormSubmitEditAvatar);
 
 //todo: Закрыть попапы через крестик и overlay, подключить анимацию
 
@@ -100,3 +157,6 @@ popups.forEach((popup) => {
 });
 
 document.addEventListener("DOMContentLoaded", initAnimatedPopups);
+
+
+
