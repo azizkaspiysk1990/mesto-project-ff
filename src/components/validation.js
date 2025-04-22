@@ -45,7 +45,7 @@ const toggleButtonState = (inputList, buttonElement, validationConfig) => {
 const setEventListeners = (formElement, validationConfig) => {
     const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
-
+    
     toggleButtonState(inputList, buttonElement, validationConfig);
 
     inputList.forEach((inputElement) => {
@@ -67,10 +67,10 @@ export const clearValidation = (formElement, validationConfig) => {
     const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
+    toggleButtonState(inputList, buttonElement, validationConfig);
+
     inputList.forEach((inputElement) => {
-        inputElement.removeAttribute("required");
-        hideInputError(formElement, inputElement, validationConfig)
+        hideInputError(formElement, inputElement, validationConfig);
+        
     });
-    buttonElement.disabled = true;
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
 };
