@@ -133,7 +133,7 @@ function handleAddCardSubmit(evt) {
       console.error("Ошибка при добавлении карточки:", err);
     })
     .finally(() => {
-      renderLoading(false, submitButton);
+      renderLoading(false, submitButton,"Сохранить");
     });
 }
 
