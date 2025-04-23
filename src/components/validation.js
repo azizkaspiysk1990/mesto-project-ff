@@ -97,3 +97,19 @@ export const clearValidation = (formElement, validationConfig) => {
     hideInputError(formElement, inputElement, validationConfig);
   });
 };
+
+export function checkFormValidity(formElement, validationConfig) {
+  const inputList = Array.from(
+    formElement.querySelectorAll(validationConfig.inputSelector)
+  );
+  const buttonElement = formElement.querySelector(
+    validationConfig.submitButtonSelector
+  );
+  const isFormValid = inputList.every((input) => input.validity.valid);
+
+  buttonElement.disabled = !isFormValid;
+  buttonElement.classList.toggle(
+    validationConfig.inactiveButtonClass,
+    !isFormValid
+  );
+}

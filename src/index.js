@@ -1,7 +1,11 @@
 import "./pages/index.css";
 import { createCard, deleteCard, likeCard } from "./components/card";
 import { openPopup, closePopup } from "./components/modal";
-import { enableValidation, clearValidation } from "./components/validation";
+import {
+  enableValidation,
+  clearValidation,
+  checkFormValidity,
+} from "./components/validation";
 import {
   getUserInfo,
   getInitialCards,
@@ -46,7 +50,6 @@ const profileDescriptionElement = document.querySelector(
 const editAvatarPopup = document.querySelector(".popup_type_edit_avatar");
 const avatarInput = editAvatarPopup.querySelector(".popup__input_type_url");
 const editAvatarForm = document.forms["avatar"];
-const submitButton = editAvatarForm.querySelector(".popup__button");
 
 // @todo: DOM узлы
 const placesList = document.querySelector(".places__list");
@@ -88,19 +91,20 @@ function openImage(element) {
 
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  const submitButton = editProfileForm.querySelector(".popup__button");
 
-  renderLoading(true, submitButton);
+  renderLoading(true, evt.submitter);
 
   editUserProfile(profileNameInput.value, profileJobInput.value)
-    .then(() => {
+    .then((userData) => {
+      profileTitleElement.textContent = userData.name;
+      profileDescriptionElement.textContent = userData.about;
       closePopup(editProfilePopup);
     })
     .catch((err) => {
       console.error("Ошибка при обновлении профиля:", err);
     })
     .finally(() => {
-      renderLoading(false, submitButton, "Сохранить");
+      renderLoading(false, evt.submitter, "Сохранить");
     });
 }
 
@@ -118,8 +122,8 @@ editProfileForm.addEventListener("submit", handleProfileFormSubmit);
 
 function handleAddCardSubmit(evt) {
   evt.preventDefault();
-  const submitButton = addCardForm.querySelector(".popup__button");
-  renderLoading(true, submitButton);
+
+  renderLoading(true, evt.submitter);
 
   addNewCard(cardNameInput.value, cardLinkInput.value)
     .then((newCard) => {
@@ -133,7 +137,7 @@ function handleAddCardSubmit(evt) {
       console.error("Ошибка при добавлении карточки:", err);
     })
     .finally(() => {
-      renderLoading(false, submitButton,"Сохранить");
+      renderLoading(false, evt.submitter, "Сохранить");
     });
 }
 
@@ -146,8 +150,8 @@ addCardButton.addEventListener("click", () => {
 
 function handleFormSubmitEditAvatar(evt) {
   evt.preventDefault();
-  const submitButton = editAvatarForm.querySelector(".popup__button");
-  renderLoading(true, submitButton);
+
+  renderLoading(true, evt.submitter);
 
   updateAvatar(avatarInput.value)
     .then((userData) => {
@@ -158,7 +162,7 @@ function handleFormSubmitEditAvatar(evt) {
       console.log("Ошибка при обновлении аватара:", err);
     })
     .finally(() => {
-      renderLoading(false, submitButton, "Сохранить");
+      renderLoading(false, evt.submitter, "Сохранить");
       clearValidation(editAvatarForm, validationConfig);
     });
 }
@@ -203,19 +207,3 @@ popups.forEach((popup) => {
 });
 
 document.addEventListener("DOMContentLoaded", initAnimatedPopups);
-
-function checkFormValidity(formElement, validationConfig) {
-  const inputList = Array.from(
-    formElement.querySelectorAll(validationConfig.inputSelector)
-  );
-  const buttonElement = formElement.querySelector(
-    validationConfig.submitButtonSelector
-  );
-  const isFormValid = inputList.every((input) => input.validity.valid);
-
-  buttonElement.disabled = !isFormValid;
-  buttonElement.classList.toggle(
-    validationConfig.inactiveButtonClass,
-    !isFormValid
-  );
-}
